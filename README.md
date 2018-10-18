@@ -72,13 +72,14 @@ yarn watch
 otherwise using `npm`:
 
 ```sh
-npm watch
+npm run watch
 ```
 
 
 
 # Repository Structure
 
+```sh
 open-dictionary-emails
 |_ src (source code)
   |_ css (compiled from .scss or manually added)
@@ -86,5 +87,11 @@ open-dictionary-emails
   |_ images (all images)
   |_ sass (.scss files)
   |_ testing (.json files)
-|_ src (source code)
-
+|_  .editorconfig
+|_  LICENSE
+|_  README.md (this document 👀)
+|_  detect-json.js
+|_  gulpfile.js
+|_  package.json
+|_  yarn.lock
+```
