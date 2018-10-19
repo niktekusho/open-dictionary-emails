@@ -6,26 +6,37 @@ const inlineCss = require('gulp-inline-css');
 const rename = require('gulp-rename');
 const data = require('gulp-data');
 const browserSync = require('browser-sync').create();
+const del = require('del');
 
 const detectJSON = require('./detect-json');
 
 // browserSync base directory
 // this will be the base directory of files for web preview
 // since we are building `*.ejs` templates (located in src/emails) to `dist` folder.
-const baseDir = "./dist";
+const outputBaseDir = "./dist";
+
+// Sources base dir
+const srcBaseDir = "./src";
+const paths = {
+	css: `${srcBaseDir}/css`,
+	ejs: `${srcBaseDir}/emails/**/.ejs`,
+	images: `${srcBaseDir}/images/**`,
+	sass: `${srcBaseDir}/sass/**/.scss`
+}
+
 
 // compile sass to css
 gulp.task('compileSass', function () {
 	return gulp
 		// import all email .scss files from src/scss folder
 		// ** means any sub or deep-sub files or foders
-		.src('./src/sass/**/*.scss')
+		.src(paths.sass)
 
 		// on error, do not break the process
 		.pipe(sass().on('error', sass.logError))
 
 		// output to `src/css` folder
-		.pipe(gulp.dest('./src/css'));
+		.pipe(gulp.dest(paths.css));
 });
 
 function ejsErrorHandler(error) {
@@ -39,7 +50,7 @@ function ejsErrorHandler(error) {
 gulp.task('build', ['compileSass'], function () {
 	return gulp
 		// import all email template (name ending with .template.ejs) files from src/emails folder
-		.src('src/emails/**/*.template.ejs')
+		.src(paths.ejs)
 
 		// detect the json data sources
 		.pipe(data(detectJSON))
@@ -48,7 +59,9 @@ gulp.task('build', ['compileSass'], function () {
 		.pipe(replace(new RegExp('\/sass\/(.+)\.scss', 'ig'), '/css/$1.css'))
 
 		// compile using ejs
-		.pipe(ejs({}, {}, {ext: '.html'}).on('error', ejsErrorHandler))
+		.pipe(ejs({}, {}, {
+			ext: '.html'
+		}).on('error', ejsErrorHandler))
 
 		// inline CSS
 		.pipe(inlineCss())
@@ -59,7 +72,16 @@ gulp.task('build', ['compileSass'], function () {
 		}))
 
 		// put compiled HTML email templates inside dist folder
-		.pipe(gulp.dest(baseDir))
+		.pipe(gulp.dest(outputBaseDir))
+});
+
+gulp.task('clean', function () {
+	return del(outputBaseDir);
+});
+
+gulp.task('images', function () {
+	return gulp.src(paths.images + '/**/*')
+		.pipe(gulp.dest(outputBaseDir));
 });
 
 // browserSync task to launch preview server
@@ -67,7 +89,7 @@ gulp.task('browserSync', function () {
 	return browserSync.init({
 		reloadDelay: 2000, // reload after 2s, compilation is finished (hopefully)
 		server: {
-			baseDir,
+			baseDir: outputBaseDir,
 			directory: true
 		}
 	});
@@ -81,7 +103,7 @@ gulp.task('reloadBrowserSync', function () {
 // watch source files for changes
 // run `build` task when anything inside `src` folder changes (except .css)
 // and reload browserSync
-gulp.task('watch', ['build', 'browserSync'], function () {
+gulp.task('watch', ['build', 'browserSync', 'images'], function () {
 	return gulp.watch([
 		'src/**/*',
 		'!src/**/*.css',

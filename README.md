@@ -75,7 +75,19 @@ otherwise using `npm`:
 npm run watch
 ```
 
+## Delete the generated files
 
+If you have `yarn` installed:
+
+```sh
+yarn clean
+```
+
+otherwise using `npm`:
+
+```sh
+npm run clean
+```
 
 # Repository Structure
 
