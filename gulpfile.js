@@ -19,9 +19,9 @@ const outputBaseDir = "./dist";
 const srcBaseDir = "./src";
 const paths = {
 	css: `${srcBaseDir}/css`,
-	ejs: `${srcBaseDir}/emails/**/.ejs`,
+	ejs: `${srcBaseDir}/emails/**/*.ejs`,
 	images: `${srcBaseDir}/images/**`,
-	sass: `${srcBaseDir}/sass/**/.scss`
+	sass: `${srcBaseDir}/sass/**/*.scss`
 }
 
 
